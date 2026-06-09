@@ -5,116 +5,207 @@ import gdown
 import os
 import importlib.util
 
-st.set_page_config(
-    page_title="BacktestPro",
-    page_icon="📊",
-    layout="centered"
-)
+st.set_page_config(page_title="BacktestPro", page_icon="📊", layout="centered")
 
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
-html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
+* { font-family: 'Space Grotesk', sans-serif !important; box-sizing: border-box; }
 
-.stApp { background: #0f1117; }
+.stApp { background: #080c14 !important; }
 
-.app-title {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: #f1f5f9;
-    letter-spacing: -0.5px;
-    margin-bottom: 0;
-}
-.app-sub {
-    font-size: 0.75rem;
-    color: #475569;
-    font-family: 'JetBrains Mono', monospace;
+/* Top bar */
+.topbar {
+    background: linear-gradient(90deg, #0d1526, #111d35);
+    border-bottom: 1px solid #1a2d4a;
+    padding: 1rem 0;
     margin-bottom: 2rem;
 }
-
-.divider {
-    border: none;
-    border-top: 1px solid #1e293b;
-    margin: 1.5rem 0;
-}
-
-.section-label {
-    font-size: 0.65rem;
-    font-weight: 600;
-    color: #38bdf8;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-bottom: 0.6rem;
-}
-
-.stat-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.7rem;
-    margin-bottom: 1rem;
-}
-
-.stat-box {
-    background: #1e293b;
-    border-radius: 10px;
-    padding: 0.9rem 1rem;
-    border: 1px solid #263548;
-}
-
-.stat-box .lbl {
-    font-size: 0.62rem;
-    color: #64748b;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.stat-box .val {
-    font-size: 1.2rem;
+.topbar-title {
+    font-size: 1.5rem;
     font-weight: 700;
-    font-family: 'JetBrains Mono', monospace;
-    margin-top: 0.2rem;
+    color: #ffffff;
+    letter-spacing: -0.3px;
+}
+.topbar-title span { color: #3b82f6; }
+.topbar-sub {
+    font-size: 0.72rem;
+    color: #3b5270;
+    font-family: 'JetBrains Mono', monospace !important;
+    margin-top: 2px;
 }
 
-.positive { color: #34d399; }
-.negative { color: #f87171; }
-.neutral  { color: #38bdf8; }
-
-.strat-badge {
-    background: #0f2720;
-    border: 1px solid #065f46;
-    border-radius: 8px;
-    padding: 0.7rem 1rem;
-    color: #34d399;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.8rem;
+/* Cards */
+.card {
+    background: #0d1526;
+    border: 1px solid #1a2d4a;
+    border-radius: 14px;
+    padding: 1.4rem;
     margin-bottom: 1rem;
 }
 
-.stButton > button {
-    background: linear-gradient(90deg, #1d4ed8, #4f46e5) !important;
-    color: white !important;
-    border: none !important;
+.card-title {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #3b82f6;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.card-title::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 12px;
+    background: #3b82f6;
+    border-radius: 2px;
+}
+
+/* Strategy loaded badge */
+.strat-loaded {
+    background: #071a12;
+    border: 1px solid #166534;
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 0.5rem;
+}
+.strat-dot {
+    width: 8px; height: 8px;
+    background: #22c55e;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #22c55e;
+    flex-shrink: 0;
+}
+.strat-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #22c55e;
+}
+.strat-ver {
+    font-size: 0.7rem;
+    color: #166534;
+    font-family: 'JetBrains Mono', monospace !important;
+}
+
+/* Param inputs label */
+label, .stNumberInput label, .stSelectbox label,
+.stDateInput label, .stCheckbox label {
+    font-size: 0.78rem !important;
+    font-weight: 500 !important;
+    color: #94a3b8 !important;
+    letter-spacing: 0.2px !important;
+}
+
+/* Input fields */
+input, [data-baseweb="input"] input,
+[data-baseweb="select"] div {
+    background: #111d35 !important;
+    border: 1px solid #1e3452 !important;
     border-radius: 8px !important;
-    font-weight: 600 !important;
+    color: #f1f5f9 !important;
     font-size: 0.9rem !important;
-    padding: 0.7rem !important;
+    font-family: 'JetBrains Mono', monospace !important;
+}
+
+/* Run button */
+.stButton > button {
+    background: linear-gradient(135deg, #1d4ed8 0%, #4338ca 100%) !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 10px !important;
+    font-size: 0.95rem !important;
+    font-weight: 700 !important;
+    padding: 0.75rem 1rem !important;
+    letter-spacing: 0.5px !important;
     width: 100% !important;
+    box-shadow: 0 4px 20px rgba(59,130,246,0.3) !important;
     transition: all 0.2s !important;
 }
-
 .stButton > button:hover {
-    opacity: 0.9 !important;
+    box-shadow: 0 6px 25px rgba(59,130,246,0.5) !important;
     transform: translateY(-1px) !important;
 }
 
-[data-testid="stFileUploader"] {
-    border: 1px dashed #1e3a5f !important;
+/* Stats */
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 1rem;
+}
+.stat-tile {
+    background: #0d1526;
+    border: 1px solid #1a2d4a;
+    border-radius: 12px;
+    padding: 1rem;
+    position: relative;
+    overflow: hidden;
+}
+.stat-tile::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    border-radius: 12px 0 0 12px;
+}
+.stat-tile.pos::after { background: #22c55e; }
+.stat-tile.neg::after { background: #ef4444; }
+.stat-tile.neu::after { background: #3b82f6; }
+
+.stat-tile .lbl {
+    font-size: 0.62rem;
+    font-weight: 600;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 0.4rem;
+}
+.stat-tile .val {
+    font-size: 1.3rem;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace !important;
+    line-height: 1;
+}
+.stat-tile.pos .val { color: #22c55e; }
+.stat-tile.neg .val { color: #ef4444; }
+.stat-tile.neu .val { color: #60a5fa; }
+
+/* File uploader */
+[data-testid="stFileUploader"] section {
+    background: #0d1526 !important;
+    border: 1.5px dashed #1e3452 !important;
     border-radius: 10px !important;
-    background: #111827 !important;
+}
+[data-testid="stFileUploader"] span {
+    color: #475569 !important;
+    font-size: 0.8rem !important;
 }
 
+/* Info box */
+.info-pill {
+    background: #0c1e38;
+    border: 1px solid #1e3a5f;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    font-size: 0.82rem;
+    color: #60a5fa;
+    font-family: 'JetBrains Mono', monospace !important;
+    margin-top: 0.4rem;
+}
+
+/* Divider */
+.div { border: none; border-top: 1px solid #111d35; margin: 0.5rem 0 1.2rem; }
+
+/* Hide streamlit chrome */
 #MainMenu, footer, header { visibility: hidden; }
+[data-testid="stDecoration"] { display: none; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -124,7 +215,7 @@ DATA_DIR   = "data"
 TIMEFRAMES = ["M1","M5","M15","M30","H1","H4","D1"]
 
 # ── FUNCTIONS ──
-@st.cache_data(show_spinner="Mengunduh data...")
+@st.cache_data(show_spinner="Mengunduh data dari Google Drive...")
 def download_data():
     os.makedirs(DATA_DIR, exist_ok=True)
     for tf in TIMEFRAMES:
@@ -175,81 +266,92 @@ def calc_stats(equity, trade_df, initial_balance):
     net   = trade_df["pnl"].sum()
     peak  = max(equity)
     dd    = max([peak - e for e in equity if e < peak], default=0)
-    dd_pct   = dd / peak * 100 if peak > 0 else 0
-    ret_pct  = net / initial_balance * 100
+    dd_pct  = dd / peak * 100 if peak > 0 else 0
+    ret_pct = net / initial_balance * 100
     return {
-        "Total Trades":  (str(total),              "neutral"),
-        "Win Rate":      (f"{wr:.1f}%",             "positive" if wr >= 50 else "negative"),
-        "Win / Loss":    (f"{wins} / {loss}",       "neutral"),
-        "Net Profit":    (f"${net:,.2f}",           "positive" if net > 0 else "negative"),
-        "Return":        (f"{ret_pct:.1f}%",        "positive" if ret_pct > 0 else "negative"),
-        "Profit Factor": (f"{pf:.2f}",              "positive" if pf >= 1 else "negative"),
-        "Gross Profit":  (f"${gp:,.2f}",            "positive"),
-        "Gross Loss":    (f"${gl:,.2f}",            "negative"),
-        "Max Drawdown":  (f"${dd:,.2f} ({dd_pct:.1f}%)", "negative" if dd > 0 else "neutral"),
-        "Final Balance": (f"${equity[-1]:,.2f}",    "positive" if equity[-1] > initial_balance else "negative"),
+        "Total Trades":  (str(total),                      "neu"),
+        "Win Rate":      (f"{wr:.1f}%",                    "pos" if wr >= 50 else "neg"),
+        "Win / Loss":    (f"{wins} / {loss}",              "neu"),
+        "Net Profit":    (f"${net:,.2f}",                  "pos" if net > 0 else "neg"),
+        "Return %":      (f"{ret_pct:+.1f}%",              "pos" if ret_pct > 0 else "neg"),
+        "Profit Factor": (f"{pf:.2f}",                     "pos" if pf >= 1 else "neg"),
+        "Gross Profit":  (f"${gp:,.2f}",                   "pos"),
+        "Gross Loss":    (f"${gl:,.2f}",                   "neg"),
+        "Max Drawdown":  (f"{dd_pct:.1f}%",                "neg" if dd > 0 else "neu"),
+        "Final Balance": (f"${equity[-1]:,.2f}",           "pos" if equity[-1] > initial_balance else "neg"),
     }
 
-# ── UI ──
-st.markdown('<div class="app-title">📊 BacktestPro</div>', unsafe_allow_html=True)
-st.markdown('<div class="app-sub">XAUUSD · Offline Engine · v1.0</div>', unsafe_allow_html=True)
+# ── TOPBAR ──
+st.markdown("""
+<div class="topbar">
+    <div class="topbar-title">Backtest<span>Pro</span></div>
+    <div class="topbar-sub">XAUUSD · Offline Engine · v1.0</div>
+</div>
+""", unsafe_allow_html=True)
 
-# STRATEGY
-st.markdown('<div class="section-label">Strategy</div>', unsafe_allow_html=True)
-strat_file   = st.file_uploader("Upload file .py", type=["py"])
+# ── STRATEGY CARD ──
+st.markdown('<div class="card"><div class="card-title">Strategy</div>', unsafe_allow_html=True)
+strat_file   = st.file_uploader("Upload file strategy (.py)", type=["py"])
 strategy_mod = None
 params       = {}
 
 if strat_file:
     try:
         strategy_mod = load_strategy(strat_file)
-        st.markdown(f'<div class="strat-badge">✅ {strategy_mod.NAME} &nbsp;·&nbsp; v{strategy_mod.VERSION}</div>',
-                    unsafe_allow_html=True)
-        st.markdown('<div class="section-label">Parameters</div>', unsafe_allow_html=True)
-        for key, meta in strategy_mod.PARAMS.items():
-            if meta["type"] == "int":
-                params[key] = st.number_input(meta["label"], value=int(meta["default"]), step=1)
-            elif meta["type"] == "float":
-                params[key] = st.number_input(meta["label"], value=float(meta["default"]),
-                                               step=0.01, format="%.2f")
-            elif meta["type"] == "bool":
-                params[key] = st.checkbox(meta["label"], value=meta["default"])
+        st.markdown(f"""
+        <div class="strat-loaded">
+            <div class="strat-dot"></div>
+            <div>
+                <div class="strat-name">{strategy_mod.NAME}</div>
+                <div class="strat-ver">version {strategy_mod.VERSION}</div>
+            </div>
+        </div>""", unsafe_allow_html=True)
     except Exception as e:
-        st.error(f"Gagal load strategy: {e}")
+        st.error(f"Gagal load: {e}")
 
-st.markdown('<hr class="divider">', unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
 
-# DATA SETTINGS
-st.markdown('<div class="section-label">Data</div>', unsafe_allow_html=True)
-tf        = st.selectbox("Timeframe", TIMEFRAMES, index=2)
-col1, col2 = st.columns(2)
-with col1:
-    date_from = st.date_input("Dari", value=pd.Timestamp("2024-01-01"))
-with col2:
-    date_to   = st.date_input("Sampai", value=pd.Timestamp("2024-06-30"))
+# ── PARAMETERS CARD ──
+if strategy_mod:
+    st.markdown('<div class="card"><div class="card-title">Parameters</div>', unsafe_allow_html=True)
+    for key, meta in strategy_mod.PARAMS.items():
+        if meta["type"] == "int":
+            params[key] = st.number_input(meta["label"], value=int(meta["default"]), step=1)
+        elif meta["type"] == "float":
+            params[key] = st.number_input(meta["label"], value=float(meta["default"]),
+                                           step=0.01, format="%.2f")
+        elif meta["type"] == "bool":
+            params[key] = st.checkbox(meta["label"], value=meta["default"])
+    st.markdown('</div>', unsafe_allow_html=True)
 
-st.markdown('<hr class="divider">', unsafe_allow_html=True)
+# ── DATA CARD ──
+st.markdown('<div class="card"><div class="card-title">Data</div>', unsafe_allow_html=True)
+tf = st.selectbox("Timeframe", TIMEFRAMES, index=2)
+c1, c2 = st.columns(2)
+with c1: date_from = st.date_input("Dari", value=pd.Timestamp("2024-01-01"))
+with c2: date_to   = st.date_input("Sampai", value=pd.Timestamp("2024-06-30"))
+st.markdown('</div>', unsafe_allow_html=True)
 
-# CAPITAL
-st.markdown('<div class="section-label">Capital</div>', unsafe_allow_html=True)
+# ── CAPITAL CARD ──
+st.markdown('<div class="card"><div class="card-title">Capital</div>', unsafe_allow_html=True)
 initial_balance = st.number_input("Initial Balance ($)", value=5000, step=100)
-
-pct_options = ["—", "1%", "2%", "5%", "10%", "20%", "50%"]
-bal_pct = st.selectbox("Lihat % dari Balance", pct_options)
+pct_opts = ["—", "0.5%", "1%", "2%", "5%", "10%", "20%", "50%"]
+bal_pct  = st.selectbox("Simulasi % dari Balance", pct_opts)
 if bal_pct != "—":
-    pct_val = float(bal_pct.replace("%", "")) / 100
-    amount  = initial_balance * pct_val
-    st.info(f"**{bal_pct}** dari ${initial_balance:,} = **${amount:,.0f}**")
+    pct_val = float(bal_pct.replace("%","")) / 100
+    st.markdown(f'<div class="info-pill">💰 {bal_pct} × ${initial_balance:,} = <b>${initial_balance*pct_val:,.0f}</b></div>',
+                unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
-run_btn = st.button("🚀 Jalankan Backtest")
+run_btn = st.button("⚡ JALANKAN BACKTEST")
 
-# RESULTS
+# ── RESULTS ──
 if run_btn:
     if not strategy_mod:
-        st.warning("⚠️ Upload strategy dulu!")
+        st.warning("Upload strategy dulu!")
     else:
-        with st.spinner("⚡ Running..."):
+        with st.spinner("Menghitung..."):
             download_data()
             df = load_csv(tf)
 
@@ -263,28 +365,23 @@ if run_btn:
             if equity and not trade_df.empty:
                 stats = calc_stats(equity, trade_df, initial_balance)
 
-                st.markdown('<hr class="divider">', unsafe_allow_html=True)
-                st.markdown('<div class="section-label">Summary</div>', unsafe_allow_html=True)
-
-                items = list(stats.items())
-                html = '<div class="stat-grid">'
-                for label, (val, cls) in items:
-                    html += f"""
-                    <div class="stat-box">
-                        <div class="lbl">{label}</div>
-                        <div class="val {cls}">{val}</div>
-                    </div>"""
+                st.markdown('<div class="card"><div class="card-title">Summary</div>', unsafe_allow_html=True)
+                html = '<div class="stats-grid">'
+                for label, (val, cls) in stats.items():
+                    html += f'<div class="stat-tile {cls}"><div class="lbl">{label}</div><div class="val">{val}</div></div>'
                 html += '</div>'
                 st.markdown(html, unsafe_allow_html=True)
+                st.markdown('</div>', unsafe_allow_html=True)
 
-                st.markdown('<div class="section-label">Equity Curve</div>', unsafe_allow_html=True)
-                st.line_chart(pd.DataFrame({"Equity ($)": equity}), color="#38bdf8", height=250)
+                st.markdown('<div class="card"><div class="card-title">Equity Curve</div>', unsafe_allow_html=True)
+                st.line_chart(pd.DataFrame({"Equity ($)": equity}), color="#3b82f6", height=220)
+                st.markdown('</div>', unsafe_allow_html=True)
 
-                st.markdown('<div class="section-label">Trade List</div>', unsafe_allow_html=True)
-                st.dataframe(trade_df, use_container_width=True, hide_index=True, height=300)
-
+                st.markdown('<div class="card"><div class="card-title">Trade List</div>', unsafe_allow_html=True)
+                st.dataframe(trade_df, use_container_width=True, hide_index=True, height=280)
                 csv = trade_df.to_csv(index=False)
-                st.download_button("⬇️ Download Trade List", csv,
+                st.download_button("⬇️ Download CSV", csv,
                     f"backtest_{tf}_{date_from}_{date_to}.csv", "text/csv")
+                st.markdown('</div>', unsafe_allow_html=True)
             else:
                 st.info("Tidak ada trade pada periode ini.")
